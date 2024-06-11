@@ -1,0 +1,21 @@
+trigger: !searchmsg
+Description: Busca un límite de 10 mensajes en el mismo canal de donde se ejecuta.
+
+$nomention
+$onlyIf[$message!=;Introduzca una palabra o letra.]
+$httpGet[https://edgabot.akiomae.com/api/others/SearchText.php?canalID=$channelID&texto=$url[encode;$message]&tokenBot=$url[encode;EL TOKEN DE SU BOT]]
+$jsonParse[$httpResult]
+$if[$jsonArrayCount[response]<=10]
+$var[array;$sub[$jsonArrayCount[response];1]]
+$else
+$var[array;10]
+$endif
+$var[msg;2]
+$var[guild;$guildID]
+$var[channel;$channelID]
+$description[$eval[$repeatMessage[$var[array];- %{DOL}%json[response\;%{DOL}%sub[%{DOL}%var[msg\]\;1\]\;author_name\]: %{DOL}%if[%{DOL}%json[response\;%{DOL}%sub[%{DOL}%var[msg\]\;1\]\;message\]!=\]%{DOL}%cropText[%{DOL}%json[response\;%{DOL}%sub[%{DOL}%var[msg\]\;1\]\;message\]\;91\;...\]%{DOL}%elseMensaje embed.%{DOL}%endif
+ - [GET LINK!\](https://discord.com/channels/%{DOL}%var[guild\]/%{DOL}%var[channel\]/%{DOL}%json[response\;%{DOL}%sub[%{DOL}%var[msg\]\;1\]\;message_id\])
+%{DOL}%var[msg\;%{DOL}%sum[%{DOL}%var[msg\]\;1\]\]
+]]]
+$color[5865f2]
+$title[Mensajes encontrados: $sub[$var[msg];2]]
